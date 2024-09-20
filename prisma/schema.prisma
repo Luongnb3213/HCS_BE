@@ -1,14 +1,145 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+model User {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  password      String
+  email         String   @unique
+  fullName      String
+  phone         String
+  dateOfBirth   DateTime
+  gender        Gender
+  role          Role
+  address       String
+  profilePicture String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Doctor {
+  id             String   @id @default(uuid())
+  userId         String
+  specialty      String
+  licenseNumber  String
+  experienceYears Int
+  education      String
+  hospitalId     String
+  bio            String
+  rating         Float
+  availableDays  Json
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Hospital {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  contact   String
+  email     String
+  website   String?
+  type      HospitalType
+  services  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Appointment {
+  id              String   @id @default(uuid())
+  userId          String
+  doctorId        String
+  hospitalId      String
+  appointmentDate DateTime
+  status          AppointmentStatus
+  reason          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Post {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  content       String
+  category      PostCategory
+  tags          Json
+  views         Int       @default(0)
+  likes         Int       @default(0)
+  commentsCount Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model HealthRecord {
+  id          String   @id @default(uuid())
+  userId      String
+  recordType  String
+  description String
+  fileUrl     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Medication {
+  id           String   @id @default(uuid())
+  userId       String
+  medicineName String
+  dosage       String
+  frequency    String
+  reminderTime Json
+  status       MedicationStatus
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  userId    String
+  content   String
+  likes     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Role {
+  USER
+  DOCTOR
+  ADMIN
+}
+
+enum HospitalType {
+  HOSPITAL
+  CLINIC
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PostCategory {
+  HEALTH_TIPS
+  MEDICAL_NEWS
+  COMMUNITY
+}
+
+enum MedicationStatus {
+  PENDING
+  TAKEN
+  MISSED
 }
