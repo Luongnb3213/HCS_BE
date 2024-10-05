@@ -6,39 +6,42 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  password      String
-  email         String   @unique
-  fullName      String
-  phone         String
-  dateOfBirth   DateTime
-  gender        Gender
-  role          Role
-  address       String
-  profilePicture String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
 
-model Doctor {
+model User {
   id             String   @id @default(uuid())
-  userId         String
-  specialty      String
-  licenseNumber  String
-  experienceYears Int
-  education      String
-  hospitalId     String
-  bio            String
-  rating         Float
-  availableDays  Json
+  username       String   @unique
+  password       String
+  email          String   @unique
+  fullName       String
+  phone          String?
+  dateOfBirth    DateTime?
+  gender         Gender
+  role           Role
+  address        String?
+  profilePicture String?
+  isVerified     Boolean  @default(false)
+  emailToken     String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
+model Doctor {
+  id              String   @id @default(uuid())
+  userId          String
+  specialty       String
+  licenseNumber   String
+  experienceYears Int
+  education       String
+  hospitalId      String
+  bio             String
+  rating          Float
+  availableDays   Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 model Hospital {
-  id        String   @id @default(uuid())
+  id        String       @id @default(uuid())
   name      String
   address   String
   contact   String
@@ -46,34 +49,34 @@ model Hospital {
   website   String?
   type      HospitalType
   services  Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model Appointment {
-  id              String   @id @default(uuid())
+  id              String            @id @default(uuid())
   userId          String
   doctorId        String
   hospitalId      String
   appointmentDate DateTime
   status          AppointmentStatus
   reason          String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 model Post {
-  id            String   @id @default(uuid())
+  id            String       @id @default(uuid())
   userId        String
   title         String
   content       String
   category      PostCategory
   tags          Json
-  views         Int       @default(0)
-  likes         Int       @default(0)
-  commentsCount Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  views         Int          @default(0)
+  likes         Int          @default(0)
+  commentsCount Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model HealthRecord {
@@ -87,15 +90,15 @@ model HealthRecord {
 }
 
 model Medication {
-  id           String   @id @default(uuid())
+  id           String           @id @default(uuid())
   userId       String
   medicineName String
   dosage       String
   frequency    String
   reminderTime Json
   status       MedicationStatus
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 }
 
 model Comment {
@@ -103,9 +106,9 @@ model Comment {
   postId    String
   userId    String
   content   String
-  likes     Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Gender {

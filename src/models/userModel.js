@@ -1,10 +1,25 @@
-
 import prisma from './prismaClient.js';
 
 const UserModel = {
   // Lấy tất cả người dùng
   findAll: async () => {
     return await prisma.user.findMany();
+  },
+
+  // Tìm người dùng theo ID
+  findByUsernameAndPassword: async (name, pass) => {
+    return await prisma.user.findFirst({
+      where: {
+        AND: [
+          {
+            username: name,
+          },
+          {
+            password: pass,
+          },
+        ],
+      },
+    });
   },
 
   // Tạo người dùng mới
@@ -21,10 +36,17 @@ const UserModel = {
     });
   },
 
+   // Tìm người dùng theo trường
+   findByFields: async (fields) => {
+    return await prisma.user.findUnique({
+      where: { ...fields },
+    });
+  },
+
   // Cập nhật thông tin người dùng
-  update: async (id, data) => {
+  update: async (fieldsToFind, data) => {
     return await prisma.user.update({
-      where: { id },
+      where: { ...fieldsToFind },
       data,
     });
   },
