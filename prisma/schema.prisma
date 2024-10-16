@@ -8,26 +8,33 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  username       String   @unique
+  id             String    @id @default(uuid())
+  username       String    @unique
   password       String
-  email          String   @unique
+  email          String    @unique
   fullName       String
   phone          String?
   dateOfBirth    DateTime?
   gender         Gender
   role           Role
   address        String?
-  profilePicture String?
-  isVerified     Boolean  @default(false)
+  profilePicture String?  
+  isVerified     Boolean   @default(false)
   emailToken     String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  doctor        Doctor?
+  posts         Post[]
+  appointments  Appointment[]
+  comments      Comment[]
+  medications   Medication[]
+  healthRecords HealthRecord[]
 }
 
 model Doctor {
   id              String   @id @default(uuid())
-  userId          String
+  userId          String   @unique
   specialty       String
   licenseNumber   String
   experienceYears Int
@@ -38,6 +45,10 @@ model Doctor {
   availableDays   Json
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  rent            Float? 
+  user        User          @relation(fields: [userId], references: [id])
+  hospital    Hospital      @relation(fields: [hospitalId], references: [id])
+  Appointment Appointment[]
 }
 
 model Hospital {
@@ -51,18 +62,25 @@ model Hospital {
   services  Json
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+
+  doctors     Doctor[]
+  Appointment Appointment[]
 }
 
 model Appointment {
   id              String            @id @default(uuid())
   userId          String
-  doctorId        String
+  doctorId        String?
   hospitalId      String
   appointmentDate DateTime
   status          AppointmentStatus
   reason          String
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  doctor   Doctor?  @relation(fields: [doctorId], references: [id])
+  hospital Hospital @relation(fields: [hospitalId], references: [id])
 }
 
 model Post {
@@ -77,6 +95,9 @@ model Post {
   commentsCount Int          @default(0)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  comments Comment[]
 }
 
 model HealthRecord {
@@ -87,6 +108,8 @@ model HealthRecord {
   fileUrl     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Medication {
@@ -99,6 +122,8 @@ model Medication {
   status       MedicationStatus
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Comment {
@@ -109,6 +134,9 @@ model Comment {
   likes     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum Gender {
@@ -132,6 +160,7 @@ enum AppointmentStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  OVERDUE
   COMPLETED
 }
 
