@@ -11,7 +11,8 @@ const AppointmentModel = {
     });
   },
 
-  findById: async (id, status) => {
+  findById: async (id, status,pageSize) => {
+    console.log(pageSize)
     return await prisma.appointment.findMany({
       where: {
         AND: [
@@ -29,6 +30,8 @@ const AppointmentModel = {
         },
         hospital: true, 
       },
+      skip: parseInt(pageSize),
+      take: 4
     });
   },
 

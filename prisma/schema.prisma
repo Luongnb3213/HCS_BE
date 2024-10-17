@@ -18,7 +18,7 @@ model User {
   gender         Gender
   role           Role
   address        String?
-  profilePicture String?  
+  profilePicture String?
   isVerified     Boolean   @default(false)
   emailToken     String?
   createdAt      DateTime  @default(now())
@@ -30,25 +30,27 @@ model User {
   comments      Comment[]
   medications   Medication[]
   healthRecords HealthRecord[]
+  notifications Notification[]
 }
 
 model Doctor {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  specialty       String
-  licenseNumber   String
-  experienceYears Int
-  education       String
-  hospitalId      String
-  bio             String
-  rating          Float
-  availableDays   Json
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  rent            Float? 
-  user        User          @relation(fields: [userId], references: [id])
-  hospital    Hospital      @relation(fields: [hospitalId], references: [id])
-  Appointment Appointment[]
+  id                String        @id @default(uuid())
+  userId            String        @unique
+  specialty         String
+  licenseNumber     String
+  experienceYears   Int
+  education         String
+  hospitalId        String
+  bio               String
+  rating            Float
+  numberAppointment Int           @default(0)
+  availableDays     Json
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  rent              Float?
+  user              User          @relation(fields: [userId], references: [id])
+  hospital          Hospital      @relation(fields: [hospitalId], references: [id])
+  Appointment       Appointment[]
 }
 
 model Hospital {
@@ -137,6 +139,23 @@ model Comment {
 
   post Post @relation(fields: [postId], references: [id])
   user User @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id               String           @id @default(uuid())
+  content          String
+  user             User             @relation(fields: [userId], references: [id])
+  userId           String
+  notificationType NotificationType
+  dataNotification String
+  sentAt           DateTime
+  createdAt        DateTime         @default(now())
+}
+
+enum NotificationType {
+  APPOINTMENT
+  MEDICATION
+  GENERAL
 }
 
 enum Gender {

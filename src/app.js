@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes.js";
 import mailRoutes from "./routes/mailRoutes.js";
 import appointmentRoutes from "./routes/appoinmentRoutes.js"
 import doctorRoutes from './routes/doctorRoutes.js'
+import notificationRoutes from  './routes/notificationRoutes.js'
 const app = express();
 
 app.use(cors())
@@ -22,6 +23,8 @@ app.use('/email', mailRoutes);
 
 app.use('/appointment', appointmentRoutes);
 
-app.use('/doctors', doctorRoutes)
+app.use('/doctors', doctorRoutes);
+
+app.use('/notifications', notificationRoutes)
 
 export default app;

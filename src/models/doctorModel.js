@@ -5,9 +5,15 @@ const DoctorModel = {
     return await prisma.doctor.findMany();
   },
 
-  findByFilter: async (filters, sortType = 'asc', date = null, time = null) => {
+  findByFilter: async (
+    filters,
+    sortType = 'asc',
+    date = null,
+    pageSize,
+    limit = 4
+  ) => {
     let availableDaysFilter = {};
-  
+
     // Thêm bộ lọc cho availableDays nếu có date
     if (date) {
       availableDaysFilter = {
@@ -17,21 +23,23 @@ const DoctorModel = {
         },
       };
     }
-  
+
     // Sử dụng include để lấy dữ liệu từ bảng 'user'
     const doctors = await prisma.doctor.findMany({
       where: {
         AND: [
-          ...filters, 
+          ...filters,
           availableDaysFilter, // Thêm bộ lọc theo availableDays
         ],
       },
       include: {
         user: true, // Bao gồm thông tin user liên kết với doctor
-        hospital: true
+        hospital: true,
       },
+      skip: parseInt(pageSize),
+      take: limit,
     });
-  
+
     // Kiểm tra nếu có dữ liệu doctor
     if (doctors && doctors.length > 0) {
       // Sắp xếp danh sách bác sĩ theo tên người dùng (user.fullName)
@@ -42,10 +50,10 @@ const DoctorModel = {
           return b.user.fullName.localeCompare(a.user.fullName);
         }
       });
-  
+
       return doctors;
     }
-    
+
     return [];
   },
 
@@ -59,9 +67,9 @@ const DoctorModel = {
     return await prisma.doctor.findUnique({
       where: { id },
       include: {
-         user: true,
-         hospital: true
-      }
+        user: true,
+        hospital: true,
+      },
     });
   },
 

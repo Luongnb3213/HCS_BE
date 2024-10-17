@@ -16,9 +16,9 @@ export const getAllDoctorsFilters = async (req, res) => {
       rating: { gt: 1 },
     },
   ];
-  const { specialty, numberPfMedicalAppointments, reviews, date, price } =
+  console.log(req.body)
+  const { specialty, numberPfMedicalAppointments, reviews, date, price , pageSize } =
     req.body;
-
   if (specialty?.trim().length) {
     filters.push({
       specialty: specialty.trim(),
@@ -46,7 +46,8 @@ export const getAllDoctorsFilters = async (req, res) => {
     const doctors = await DoctorModel.findByFilter(
       filters,
       numberPfMedicalAppointments,
-      date
+      date,
+      pageSize
     );
     if (doctors) {
       res.json(doctors);

@@ -1,10 +1,11 @@
 import AppointmentModel from '../models/appointmentModel.js';
+import { Prisma } from '@prisma/client';
 
 export const getAllAppointments = async (req, res) => {
-  const { id, status } = req.query;
+  const { id, status, pageSize } = req.query;
 
   try {
-    const appointments = await AppointmentModel.findById(id, status);
+    const appointments = await AppointmentModel.findById(id, status,pageSize);
     if (appointments) {
       res.json(appointments);
       return;
@@ -12,7 +13,23 @@ export const getAllAppointments = async (req, res) => {
 
     res.json([]);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching appointments', error });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error('Prisma error: ', {
+        code: error.code,
+        message: error.message,
+        meta: error.meta,
+      });
+      res.status(500).json({
+        message: 'Error fetching doctors',
+        prismaError: error.message,
+        details: error.meta,
+      });
+    } else {
+      console.error('General error: ', error);
+      res
+        .status(500)
+        .json({ message: 'Error fetching doctors', error: error.message });
+    }
   }
 };
 
