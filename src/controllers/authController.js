@@ -28,12 +28,11 @@ export const refreshToken = (req, res) => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) return res.sendStatus(401);
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
 
   try {
     const user = verifyRefreshToken(refreshToken);
-    const newAccessToken = generateAccessToken({ name: user.name });
-    res.json({ accessToken: newAccessToken });
+    const newAccessToken = generateAccessToken(user);
+    res.json({ token: newAccessToken });
   } catch (err) {
     res.sendStatus(403);
   }
