@@ -1,4 +1,5 @@
 import express from 'express';
+
 import {
   getAllHospitals,
   getHospitalById,
@@ -10,18 +11,18 @@ import {
 const router = express.Router();
 
 // Get all hospitals
-router.get('/hospitals', getAllHospitals);
+router.get('/', getAllHospitals);
 
 // Get a single hospital by ID
-router.get('/hospitals/:id', getHospitalById);
+router.get('/:id', getHospitalById);
 
 // Create a new hospital
-router.post('/hospitals', createHospital);
+router.post('/', createHospital);
 
 // Update an existing hospital
-router.put('/hospitals/:id', updateHospital);
+router.put('/:id', updateHospital);
 
 // Delete a hospital by ID
-router.delete('/hospitals/:id', deleteHospital);
+router.delete('/:id', deleteHospital);
 
 export default router;

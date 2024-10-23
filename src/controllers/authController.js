@@ -4,7 +4,7 @@ import {
   verifyRefreshToken,
 } from '../utils/token.js';
 import UserModel from '../models/userModel.js';
-import { Role } from '@prisma/client';
+import { Role, Gender } from '@prisma/client';
 
 export const Login = async (req, res) => {
   const { username, password } = req.body;
@@ -47,9 +47,9 @@ export const Signup = async (req, res) => {
       email: email,
       fullName: fullname,
       role: "USER",
-      gender: Role.USER
+      gender: Gender.MALE
     });
-    console.log(userCreate)
+
 
     if (userCreate) {
       res.status(200).json({ message: 'Signup successful ', userCreate });

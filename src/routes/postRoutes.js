@@ -1,6 +1,6 @@
 // src/routes/postRoutes.js
 import express from 'express';
-import { getAllPosts, getPostById, createPost, updatePost, deletePost } from '../controllers/postController.js';
+import { getAllPosts, getPostById, createPost, updatePost, deletePost } from '../controllers/postControllers.js';
 
 const router = express.Router();
 

@@ -7,6 +7,8 @@ import appointmentRoutes from './routes/appoinmentRoutes.js';
 import doctorRoutes from './routes/doctorRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import { authenticateToken } from './middlewares/authenticateToken.js';
+import hospitalRoutes from './routes/hospitalRoutes.js'
+import postRoutes from './routes/postRoutes.js'
 const app = express();
 
 app.use(cors());
@@ -17,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 
-app.use(authenticateToken);
+// app.use(authenticateToken);
 
 app.use('/users', userRoutes);
 
@@ -28,5 +30,11 @@ app.use('/appointment', appointmentRoutes);
 app.use('/doctors', doctorRoutes);
 
 app.use('/notifications', notificationRoutes);
+
+app.use('/hospitals' , hospitalRoutes);
+
+app.use('/post' , postRoutes);
+
+
 
 export default app;
