@@ -32,12 +32,33 @@ export const createUser = async (req, res) => {
   }
 };
 
+// export const updateUser = async (req, res) => {
+//   const { id } = req.params;
+//   try {
+//     const existingUser = await UserModel.findByFields({ id });
+//     if (!existingUser) {
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+//     const updatedUser = await UserModel.update(id, req.body);
+//     res.json(updatedUser);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Error updating user', error });
+//   }
+// };
+
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const updatedUser = await UserModel.update(id, req.body);
+    // Kiểm tra xem người dùng có tồn tại không
+    const existingUser = await UserModel.findByFields({ id });
+    if (!existingUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const updatedUser = await UserModel.update({ id }, req.body);
     res.json(updatedUser);
   } catch (error) {
+    console.error('Update User Error:', error);
     res.status(500).json({ message: 'Error updating user', error });
   }
 };
