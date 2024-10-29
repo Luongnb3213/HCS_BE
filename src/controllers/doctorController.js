@@ -25,7 +25,7 @@ export const getAllDoctorsFilters = async (req, res) => {
     });
   }
 
-  if (reviews?.trim().length) {
+  if ( reviews && reviews?.trim().length) {
     filters[0].reviews = { gt: parseFloat(reviews.trim()) };
   }
 
@@ -33,7 +33,6 @@ export const getAllDoctorsFilters = async (req, res) => {
     const [minPrice, maxPrice] = price
       .split(',')
       .map((p) => parseFloat(p.trim()));
-    console.log(price.split(',').map((p) => parseFloat(p.trim())));
     filters.push({
       rent: {
         gte: minPrice,

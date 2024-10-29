@@ -4,11 +4,32 @@ import HospitalModel from '../models/hospitalModel.js';
 export const getAllHospitals = async (req, res) => {
   try {
     const hospitals = await HospitalModel.findAll();
-    res.json(hospitals);
+    if(hospitals){
+      res.json(hospitals);
+        return;
+    }
+    res.status(500).json({ message: 'Error fetching hospitals', error });
+
   } catch (error) {
     res.status(500).json({ message: 'Error fetching hospitals', error });
   }
 };
+
+export const getHospitalsByName = async (req, res) => {
+   const { name , pageSize } = req.body;
+
+  try {
+    const hospitals = await HospitalModel.findByName('', pageSize);
+    if(hospitals){
+      res.json(hospitals);
+       return;
+    }
+    res.status(500).json({ message: 'Error fetching hospitals', error });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching hospitals', error });
+  }
+
+}
 
 export const getHospitalById = async (req, res) => {
   const { id } = req.params;

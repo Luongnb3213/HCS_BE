@@ -6,6 +6,7 @@ import {
   createHospital,
   updateHospital,
   deleteHospital,
+  getHospitalsByName
 } from '../controllers/hospitalController.js';
 
 const router = express.Router();
@@ -18,6 +19,8 @@ router.get('/:id', getHospitalById);
 
 // Create a new hospital
 router.post('/', createHospital);
+router.post('/filter', getHospitalsByName);
+
 
 // Update an existing hospital
 router.put('/:id', updateHospital);

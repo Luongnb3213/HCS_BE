@@ -1,60 +1,56 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database.js';
-import PostModel from './postModel.js';
-import UserModel from './userModel.js';
+// src/models/hospitalModel.js
+import { PrismaClient } from '@prisma/client';
+import prisma from './prismaClient.js';
 
-class CommentModel extends Model {}
+const CommentModel = {
+  findAll: async () => {
+    try {
+      return await prisma.comment.findMany();
+    } catch (error) {
+      throw new Error('Error fetching comments');
+    }
+  },
 
-CommentModel.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+  findById: async (id) => {
+    try {
+      return await prisma.comment.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error('Error fetching comments');
+    }
   },
-  postId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: PostModel,
-      key: 'id'
-    },
-    onDelete: 'CASCADE'
-  },
-  userId: {
-    type: DataTypes.UUID,
-    allowNull: false,
-    references: {
-      model: UserModel,
-      key: 'id'
-    },
-    onDelete: 'CASCADE'
-  },
-  content: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  likes: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  },
-  createdAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-    onUpdate: DataTypes.NOW
-  }
-}, {
-  sequelize,
-  modelName: 'Comment',
-  tableName: 'comments',
-  timestamps: true // Automatically handle createdAt and updatedAt
-});
 
-// Define relationships
-CommentModel.belongsTo(PostModel, { foreignKey: 'postId', onDelete: 'CASCADE' });
-CommentModel.belongsTo(UserModel, { foreignKey: 'userId', onDelete: 'CASCADE' });
+  create: async (commmentData) => {
+    try {
+      return await prisma.comment.create({
+        data: commmentData,
+      });
+    } catch (error) {
+       console.log(error)
+    }
+  },
+
+  update: async (id, commmentData) => {
+    try {
+      return await prisma.comment.update({
+        where: { id },
+        data: commmentData,
+      });
+    } catch (error) {
+      throw new Error('Error updating hospital');
+    }
+  },
+
+  delete: async (id) => {
+    try {
+      return await prisma.comment.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error('Error deleting hospital');
+    }
+  },
+};
 
 export default CommentModel;

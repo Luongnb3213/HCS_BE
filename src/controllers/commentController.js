@@ -1,118 +1,105 @@
+// src/controllers/commentController.js
+import { Prisma } from '@prisma/client';
 import CommentModel from '../models/commentModel.js';
-import UserModel from '../models/userModel.js';
-import PostModel from '../models/postModel.js';
 
-// Get all comments for a post
-export const getAllCommentsByPost = async (req, res) => {
-  const { postId } = req.params;
-  try {
-    const post = await PostModel.findById(postId);
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
+
+ export const getAllComments = async (req, res) => {
+    try {
+      const comments = await CommentModel.findAll();
+      return res.status(200).json(comments);
+    } catch (error) {
+      return res.status(500).json({ message: 'Error fetching comments', error: error.message });
     }
-    
-    const comments = await CommentModel.findAll({
-      where: { postId }
-    });
-    res.json(comments);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching comments', error });
   }
-};
 
-// Get comment by ID
-export const getCommentById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const comment = await CommentModel.findById(id);
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+  // Lấy bình luận theo ID
+  export const getCommentById = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const comment = await CommentModel.findById(id);
+      if (!comment) {
+        return res.status(404).json({ message: 'Comment not found' });
+      }
+      return res.status(200).json(comment);
+    } catch (error) {
+      return res.status(500).json({ message: 'Error fetching comment', error: error.message });
     }
-    res.json(comment);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching comment', error });
   }
-};
 
-// Create a new comment (only for DOCTOR role)
-export const createComment = async (req, res) => {
-  const { postId, content } = req.body;
-  const { userId } = req;
-
-  try {
-    const user = await UserModel.findById(userId);
-
-    // Ensure the user is a doctor
-    if (user.role !== 'DOCTOR') {
-      return res.status(403).json({ message: 'Only doctors can create comments' });
+  export const createComment = async (req, res) => {
+    const { postId, userId, content, likes } = req.body;
+  
+    // Validate input
+    if (!postId || !userId || !content) {
+      return res.status(400).json({ message: 'Post ID, User ID, and Content are required' });
     }
-
-    // Ensure the post exists
-    const post = await PostModel.findById(postId);
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-
-    const newComment = await CommentModel.create({
+  
+    const newComment = {
       postId,
       userId,
       content,
-      likes: 0
-    });
+      likes: parseInt(likes)  || 0,
+    };
+  
+    try {
+      const createdComment = await CommentModel.create(newComment);
+      console.log(createdComment);
+      return res.status(201).json(createdComment);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        console.error('Prisma error: ', {
+          code: error.code,
+          message: error.message,
+          meta: error.meta,
+        });
+        res.status(500).json({
+          message: 'Error fetching doctors',
+          prismaError: error.message,
+          details: error.meta,
+        });
+      } else {
+        console.error('General error: ', error);
+        res
+          .status(500)
+          .json({ message: 'Error fetching comments', error: error.message });
+      }
+    }
+  };
+  
 
-    res.status(201).json(newComment);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating comment', error });
+  // Cập nhật bình luận
+  export const  updateComment = async (req, res) => {
+    const { id } = req.params;
+    const { content, likes } = req.body;
+
+    if (!content && likes === undefined) {
+      return res.status(400).json({ message: 'Content or Likes must be provided for update' });
+    }
+
+    const updatedData = {};
+    if (content) updatedData.content = content;
+    if (likes !== undefined) updatedData.likes = likes;
+
+    try {
+      const updatedComment = await CommentModel.update(id, updatedData);
+      return res.status(200).json(updatedComment);
+    } catch (error) {
+      return res.status(500).json({ message: 'Error updating comment', error: error.message });
+    }
   }
-};
 
-// Update a comment (only if author is the one updating)
-export const updateComment = async (req, res) => {
-  const { id } = req.params;
-  const { content } = req.body;
-  const { userId } = req;
+  // Xóa bình luận
+  export const  deleteComment = async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const comment = await CommentModel.findById(id);
-
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+    try {
+      const deletedComment = await CommentModel.delete(id);
+      return res.status(200).json({ message: 'Comment deleted successfully', deletedComment });
+    } catch (error) {
+      return res.status(500).json({ message: 'Error deleting comment', error: error.message });
     }
-
-    // Ensure the user is the author of the comment
-    if (comment.userId !== userId) {
-      return res.status(403).json({ message: 'You can only update your own comments' });
-    }
-
-    const updatedComment = await CommentModel.update(id, { content });
-    res.json(updatedComment);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating comment', error });
   }
-};
 
-// Delete a comment (only if author or admin)
-export const deleteComment = async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req;
 
-  try {
-    const comment = await CommentModel.findById(id);
 
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
-    }
-
-    const user = await UserModel.findById(userId);
-
-    // Ensure the user is the author or an admin
-    if (comment.userId !== userId && user.role !== 'ADMIN') {
-      return res.status(403).json({ message: 'You can only delete your own comments or must be an admin' });
-    }
-
-    await CommentModel.delete(id);
-    res.status(204).json({});
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting comment', error });
-  }
-};

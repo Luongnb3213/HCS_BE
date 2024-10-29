@@ -9,6 +9,8 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import { authenticateToken } from './middlewares/authenticateToken.js';
 import hospitalRoutes from './routes/hospitalRoutes.js'
 import postRoutes from './routes/postRoutes.js'
+import commentRoutes from './routes/commentRoutes.js'
+import medicationRoutes from './routes/MedicationRoutes.js'
 const app = express();
 
 app.use(cors());
@@ -34,6 +36,10 @@ app.use('/notifications', notificationRoutes);
 app.use('/hospitals' , hospitalRoutes);
 
 app.use('/post' , postRoutes);
+
+app.use('/comments' , commentRoutes);
+
+app.use('/medication' , medicationRoutes);
 
 
 

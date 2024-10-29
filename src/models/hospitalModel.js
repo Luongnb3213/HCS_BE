@@ -11,6 +11,18 @@ const HospitalModel = {
     }
   },
 
+  findByName: async (nameToFind,pageSize) => {
+    try {
+      return await prisma.hospital.findMany({
+        where: { name: { contains: nameToFind } },
+        skip: parseInt(pageSize),
+        take: 5,
+      });
+    } catch (error) {
+      throw new Error('Error fetching hospitals');
+    }
+  },
+
   findById: async (id) => {
     try {
       return await prisma.hospital.findUnique({
