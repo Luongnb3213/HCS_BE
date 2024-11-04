@@ -17,18 +17,16 @@ export const getAllHospitals = async (req, res) => {
 
 export const getHospitalsByName = async (req, res) => {
    const { name , pageSize } = req.body;
-
   try {
-    const hospitals = await HospitalModel.findByName('', pageSize);
+    const hospitals = await HospitalModel.findByName(name, pageSize);
     if(hospitals){
       res.json(hospitals);
        return;
     }
-    res.status(500).json({ message: 'Error fetching hospitals', error });
+    res.status(500).json({ message: 'Error fetching controller hospitals', error });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching hospitals', error });
+    res.status(500).json({ message: 'Error fetching try catch hospitals', error });
   }
-
 }
 
 export const getHospitalById = async (req, res) => {

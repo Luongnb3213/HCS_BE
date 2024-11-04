@@ -16,10 +16,10 @@ const HospitalModel = {
       return await prisma.hospital.findMany({
         where: { name: { contains: nameToFind } },
         skip: parseInt(pageSize),
-        take: 5,
+        take: 7,
       });
     } catch (error) {
-      throw new Error('Error fetching hospitals');
+      throw new Error(`Error prisma hospitals: ${error.message}`);
     }
   },
 
